@@ -71,29 +71,26 @@ Please decide whether to use the Surfing module only after clearly understanding
 
 - Uninstall the module from the Magisk Manager, Kernelsu Manager, or APatch application. [👉🏻Removal Command](https://github.com/MoGuangYu/Surfing/blob/main/uninstall.sh#L3-L4)
 
-> Uninstalling this module through the manager will uninstall all corresponding service data. Web and other tile apps need to be uninstalled manually.
-
 ## Wiki
 
 <details>
 <summary>1. First Use</summary>
 
 - After installing the module for the first time, **please first** add your subscription URL to `/data/adb/box_bll/clash/config.yaml`, and then manually restart the device once.
-- Toggle the module switch once and open the **Web** application on the desktop
 - Due to network reasons, the **rules**/**subscriptions** may not be fully downloaded automatically. Please manually refresh the panel.
-  - If the subscription fails to load, please try to switch the **UA** in the configuration file
   - If the above fails, ensure your network environment is normal.
-- ~~After the configuration and node fetching are complete, go to~~: 
-- ~~**Settings** → **Search Box**, and search for the keyword "DNS." If similar options appear, select them~~:
-  - ~~Private DNS~~
-  - ~~Dedicated DNS~~
-- ~~And configure the custom domain~~:
+- After the configuration and node fetching are complete, go to: 
+- **Settings** → **Search Box**, and search for the keyword "DNS." If similar options appear, select them:
+  - Private DNS
+  - Dedicated DNS
+- And configure the custom domain:
 ```text
 1dot1dot1dot1.cloudflare-dns.com
 ```
 
 - Web App:
   - It is purely a graphical tool for portable browsing and managing backend routing data, with no other unnecessary uses.
+  - If you encounter a **connection failed** request or the proxy group icons are not displayed, you can try turning the network off/on, or check if you can access `raw.githubusercontent.com`.
 
 <img src="./folder/Webapk.png" alt="Web UI" width="300">
 
@@ -104,11 +101,27 @@ Please decide whether to use the Surfing module only after clearly understanding
 #
 
 <details>
-<summary>2. Control Operation</summary>
+<summary>2. Controlling Operation</summary>  
 
-- Can control the start and stop via **WiFi SSID** network.
-- Can control the operation service by turning the module switch on/off, with real-time effect.
-- You can add the control switch tile of the module to the system status bar. If you cannot find the tile switch after installing the module and restarting the device, you can manually install the Apk [Download source code](https://raw.githubusercontent.com/MoGuangYu/Surfing/main/folder/SurfingTile.tar.gz)
+- Can be controlled via **WiFi SSID** network toggling  
+- Use the module switch to enable/disable the service in real time  
+- Add a control switch to the system status bar
+  
+<img src="./folder/KAKJFS.jpg" alt="KJFS" width="300">
+
+[Download Apk](https://www.coolapk.com/apk/com.coolapk.market) | [Copy URL](https://raw.githubusercontent.com/MoGuangYu/Surfing/main/folder/KJFSURL.md)
+
+<img src="./folder/BJZDY.jpg" alt="KJFS" width="300">
+
+- Enter Settings
+
+<img src="./folder/WLDR.jpg" alt="KJFS" width="300">
+
+- Import URL
+
+<img src="./folder/CTSZ.jpg" alt="KJFS" width="300">
+
+- Add a custom tile to the status bar
 
 </details>
 
@@ -117,7 +130,7 @@ Please decide whether to use the Surfing module only after clearly understanding
 <details>
 <summary>3. Routing Rules</summary>
 
-GitHub Actions automatically builds at 6 AM Beijing Time every day to ensure the rules are up to date.
+GitHub Actions automatically builds at 6 AM Beijing Time every day to ensure the CN rules are up to date. [Wiki](https://github.com/MetaCubeX/meta-rules-dat)
 
 > The routing rules are all linked online and automatically updated every 24 hours.
 
@@ -129,13 +142,13 @@ GitHub Actions automatically builds at 6 AM Beijing Time every day to ensure the
 <summary>4. Subsequent Updates</summary>
 
 - If you are using the default configuration, updates will be seamless.
-- Supports online module updates from the client. No reboot is required after updating, but a reboot is still recommended.
+- The module supports online updates in the client, and no restart is required after the update. The module switch control (enable/disable) ~~may temporarily fail and still require a restart~~, or you can use Toolbox for updates (not recommended, as script updates may not be timely).
 - During updates, the configuration file will be backed up to:
    - `config.yaml.bak`
 - User configuration will be backed up during the update to:
    - `box.config.bak`
 - Your subscription URL will be automatically extracted and backed up to:
-   - `proxies/subscribe_urls_backup.txt`
+   - `subscribe_urls_backup.txt`
    - The backup will be automatically extracted and restored to the new configuration, suitable for those using the default configuration file.
 
 - Module updates do not include:
@@ -169,10 +182,9 @@ Android user group ID identifiers:
 
 2. Tun Mode
 - ~~Enabled by default~~
-- ~~Better routing traffic management~~
-- ~~Deprecated in v7.4.3~~
+- Deprecated in v7.4.3
 
-> ~~If you have special needs, you can turn it off by yourself~~. Please do not use the black and white list before using this mode.
+> If necessary, you can manually enable it. Please do not use the whitelist/blacklist before using this mode.
 
 3. Routing Rules
 - Designed for mainland China usage
@@ -186,15 +198,14 @@ Android user group ID identifiers:
 > May affect normal display of page fonts.
 
 5. LAN Sharing
-- Enable hotspot and let other devices connect.
-- TUN Gateway: `172.20.0.1`
+- Enable hotspot to allow other devices to connect.
 
-> To access the dashboard backend from other devices, visit: `http://<Current WiFi/TUN Gateway>:9090/ui`
+> If other devices need to access the console backend, just use (http://Current WiFi Gateway:9090/ui).
 
-~~6. Private DNS~~
-- ~~**When enabled**, please **ensure the module service is running properly**, **otherwise**, it may affect CN resolution and result in **no internet connection**.~~
-- ~~This is an optional feature ✅~~
-- ~~It is recommended to enable it.~~
+6. Private DNS
+- **When enabled**, please **ensure the module service is running properly**, **otherwise**, it may affect CN resolution and result in **no internet connection**.
+- This is an optional feature ✅
+- It is recommended to enable it.
 
 > This is to fully solve some IPv6 DNS request leaks under Wan0.
 
@@ -202,9 +213,8 @@ Android user group ID identifiers:
 - No need to mount
    - Just delete the file.
 - To remount
-   - Create a new file in the **etc** folder.
+   - Create a new file in the `etc` folder.
 - All modifications take effect immediately.
-- When updating/installing, you can use the volume up and down keys to choose whether to mount.
 
 > Domain IP redirection.
 

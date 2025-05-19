@@ -5,9 +5,6 @@ on:
     paths:
       - 'Surfing.json'
 
-permissions:
-  contents: write
-
 jobs:
   build:
     runs-on: ubuntu-latest

@@ -1,12 +1,5 @@
 #!/system/bin/sh
-trap cleanup INT TERM EXIT
-cleanup() {
-  echo -e "\n脚本已退出，正在清理..."
-  trap - INT TERM EXIT
-  pkill -P $$ 2>/dev/null
-  kill $(jobs -p) 2>/dev/null
-  exit 0
-}
+
 if [ "$(id -u)" -ne 0 ]; then
     echo "请设置以 Root 用户运行"
     exit 1
@@ -16,34 +9,36 @@ if [ -f "config.env" ]; then
     source config.env
 else
     echo "↴"
-    echo "Warn：配置文件 config.env 已创建"
+    echo "警告：配置文件 config.env 已创建"
     echo 'GITHUB_TOKEN=你的个人令牌' > config.env
     echo "      请打开并配置你的个人令牌，以免受速率限制！"
     sleep 1
     source config.env
 fi
 
-SURFING_PATH="/data/adb/modules/Surfing"
-MODULE_PROP="${SURFING_PATH}/module.prop"
+SURFING_PATH="/data/adb/modules/Surfing/"
+MODULE_PROP="${SURFING_PATH}module.prop"
 GXSURFING_PATH="/data/adb/modules_update/Surfing"
 NET_PATH="/data/misc/net"
 CTR_PATH="/data/misc/net/rt_tables"
+SCRIPTS_PATH="/data/adb/box_bll/scripts/"
 BOX_PATH="/data/adb/box_bll/scripts/box.config"
 CONFIG_PATH="/data/adb/box_bll/clash/config.yaml"
 CORE_PATH="/data/adb/box_bll/bin/clash"
-VAR_PATH="/data/adb/box_bll/variab"
+COREE_PATH="/data/adb/box_bll/clash/"
+VAR_PATH="/data/adb/box_bll/variab/"
 BASEE_URL="https://github.com/MetaCubeX/mihomo/releases/download/"
 RELEASE_PATH="mihomo-android-arm64-v8"
 BASE_URL="https://api.github.com/repos/MetaCubeX/mihomo/releases/latest"
-PANEL_DIR="/data/adb/box_bll/clash/Web"
-META_DIR="${PANEL_DIR}/Meta"
-CHANGELOG_URL="https://raw.githubusercontent.com/GitMetaio/Surfing/main/changelog.md"
+PANEL_DIR="/data/adb/box_bll/panel/"
+META_DIR="${PANEL_DIR}Meta/"
+CHANGELOG_URL="https://raw.githubusercontent.com/MoGuangYu/Surfing/main/changelog.md"
 META_URL="https://github.com/metacubex/metacubexd/archive/gh-pages.zip"
 METAA_URL="https://api.github.com/repos/metacubex/metacubexd/releases/latest"
-YACD_DIR="${PANEL_DIR}/Yacd"
+YACD_DIR="${PANEL_DIR}Yacd/"
 YACD_URL="https://github.com/MetaCubeX/yacd/archive/gh-pages.zip"
 YACDD_URL="https://api.github.com/repos/MetaCubeX/Yacd-meta/releases/latest"
-ZASH_DIR="${PANEL_DIR}/Zash"
+ZASH_DIR="${PANEL_DIR}Zash/"
 ZASH_URL="https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip"
 ZASHD_URL="https://api.github.com/repos/Zephyruso/zashboard/releases/latest"
 BACKUP_FILE="/data/adb/box_bll/clash/proxies/subscribe_urls_backup.txt"
@@ -58,138 +53,15 @@ GEOSITE_URL="https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/dow
 GEODATA_URL="https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases/latest"
 GEOIP_PATH="/data/adb/box_bll/clash/GeoIP.dat"
 GEOSITE_PATH="/data/adb/box_bll/clash/GeoSite.dat"
-GIT_URL="https://api.github.com/repos/GitMetaio/Surfing/releases/latest"
+RULES_PATH="/data/adb/box_bll/clash/rule/"
+GIT_URL="https://api.github.com/repos/MoGuangYu/Surfing/releases/latest"
+HOSTS_FILE="/data/adb/box_bll/clash/etc/hosts"
+HOSTS_PATH="/data/adb/box_bll/clash/etc/"
+HOSTS_BACKUP="/data/adb/box_bll/clash/etc/hosts.bak"
 
-SAVE_DIR="/data/adb/box_bll/clash/rules/规则审查"
 
-rules=(
-"广告拦截_Domain.yaml https://anti-ad.net/clash.yaml"
-"WebRTC_Classical.yaml https://raw.githubusercontent.com/GitMetaio/Surfing/refs/heads/rm/Home/rules/WebRTC.list"
-"CN_IPCIDR.yaml https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/meta/geo/geoip/cn.yaml"
-"CN_Domain.yaml https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/refs/heads/meta/geo/geosite/cn.yaml"
-"XiaoHongShu_Domain.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/XiaoHongShu/XiaoHongShu_OCD_Domain.yaml"
-"XiaoHongShu_IPCIDR.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/XiaoHongShu/XiaoHongShu_OCD_IP.yaml"
-"DouYin_Domain.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/DouYin/DouYin_OCD_Domain.yaml"
-"DouYin_IPCIDR.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/DouYin/DouYin_OCD_IP.yaml"
-"BiliBili_Domain.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/BiliBili/BiliBili_OCD_Domain.yaml"
-"BiliBili_IPCIDR.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/BiliBili/BiliBili_OCD_IP.yaml"
-"Steam_Domain.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/Steam/Steam_OCD_Domain.yaml"
-"Steam_IPCIDR.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/Steam/Steam_OCD_IP.yaml"
-"TikTok_Domain.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/TikTok/TikTok_OCD_Domain.yaml"
-"TikTok_IPCIDR.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/TikTok/TikTok_OCD_IP.yaml"
-"Spotify_Domain.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/Spotify/Spotify_OCD_Domain.yaml"
-"Spotify_IPCIDR.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/Spotify/Spotify_OCD_IP.yaml"
-"Facebook_Domain.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/Facebook/Facebook_OCD_Domain.yaml"
-"Facebook_IPCIDR.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/Facebook/Facebook_OCD_IP.yaml"
-"Telegram_Domain.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/Telegram/Telegram_OCD_Domain.yaml"
-"Telegram_IPCIDR.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/Telegram/Telegram_OCD_IP.yaml"
-"YouTube_Domain.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/YouTube/YouTube_OCD_Domain.yaml"
-"YouTube_IPCIDR.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/YouTube/YouTube_OCD_IP.yaml"
-"Google_Domain.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/Google/Google_OCD_Domain.yaml"
-"Google_IPCIDR.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/Google/Google_OCD_IP.yaml"
-"GoogleFCM_Domain.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/GoogleFCM/GoogleFCM_OCD_Domain.yaml"
-"GoogleFCM_IPCIDR.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/GoogleFCM/GoogleFCM_OCD_IP.yaml"
-"Microsoft_Domain.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/Microsoft/Microsoft_OCD_Domain.yaml"
-"Microsoft_IPCIDR.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/Microsoft/Microsoft_OCD_IP.yaml"
-"Apple_Domain.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/Apple/Apple_OCD_Domain.yaml"
-"Apple_IPCIDR.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/Apple/Apple_OCD_IP.yaml"
-"OpenAI_Domain.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/OpenAI/OpenAI_OCD_Domain.yaml"
-"OpenAI_IPCIDR.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/OpenAI/OpenAI_OCD_IP.yaml"
-"Netflix_Domain.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/Netflix/Netflix_OCD_Domain.yaml"
-"Netflix_IPCIDR.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/Netflix/Netflix_OCD_IP.yaml"
-"Discord_Domain.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/Discord/Discord_OCD_Domain.yaml"
-"Discord_IPCIDR.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/Discord/Discord_OCD_IP.yaml"
-"GitHub_Domain.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/GitHub/GitHub_OCD_Domain.yaml"
-"GitHub_IPCIDR.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/GitHub/GitHub_OCD_IP.yaml"
-"Twitter_Domain.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/Twitter/Twitter_OCD_Domain.yaml"
-"Twitter_IPCIDR.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/Twitter/Twitter_OCD_IP.yaml"
-"LAN_Domain.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/Lan/Lan_OCD_Domain.yaml"
-"LAN_IPCIDR.yaml https://raw.githubusercontent.com/GitMetaio/rule/refs/heads/master/rule/Clash/Lan/Lan_OCD_IP.yaml"
-)
-
-printc() {
-  local newline=1
-  if [ "$1" = "-n" ]; then
-    newline=0
-    shift
-  fi
-  local color="$1"
-  shift
-  local text="$*"
-  local code
-  case "$color" in
-    red) code="\033[1;31m" ;;
-    green) code="\033[1;32m" ;;
-    yellow) code="\033[1;33m" ;;
-    blue) code="\033[1;34m" ;;
-    magenta) code="\033[1;35m" ;;
-    cyan) code="\033[1;36m" ;;
-    white) code="\033[1;37m" ;;
-    *) code=""; text="$color $text" ;;
-  esac
-  if [ "$newline" -eq 1 ]; then
-    echo -e "${code}${text}\033[0m"
-  else
-    echo -en "${code}${text}\033[0m"
-  fi
-}
-
-download_rule() {
-    local name="$1"
-    local url="$2"
-    local file_path="$SAVE_DIR/$name"
-
-    mkdir -p "$SAVE_DIR"
-
-    curl -s -o "$file_path" "$url" > /dev/null 2>&1
-
-    if [ $? -ne 0 ]; then
-        status_code=$?
-        echo "下载失败: $name, 状态码: $status_code"
-    fi
-}
-
-download_all_rules() {
-    while true; do
-        echo "↴" 
-        echo "此为用于审查配置文件中引用的规则集 (y/n)"
-        read confirm
-        case "$confirm" in
-            y|Y)
-                echo "↴" 
-                echo "正在下载规则文件..."
-                echo "https://github.com/GitMetaio/rule"
-
-                for rule in "${rules[@]}"; do
-                    name=$(echo "$rule" | awk '{print $1}')
-                    url=$(echo "$rule" | awk '{print $2}')
-                    download_rule "$name" "$url"
-                done
-
-                echo "↴" 
-                echo "所有规则下载完成"
-                echo "↴" 
-                echo "位于 /data/adb/box_bll/clash/rules/"
-                break
-                ;;
-            n|N)
-                echo "↴" 
-                echo "操作已取消！"
-                break
-                ;;
-            *)
-                echo "↴" 
-                echo "无效的输入！"
-                ;;
-        esac
-    done
-}
-
-CURRENT_VERSION="v13.5.5"
-UPDATE_LOG="更新日志: 
-解决后台异常内存占用..."
-
-TOOLBOX_URL="https://raw.githubusercontent.com/GitMetaio/Surfing/main/box_bll/clash/Toolbox.sh"
+CURRENT_VERSION="v13.4.5"
+TOOLBOX_URL="https://raw.githubusercontent.com/MoGuangYu/Surfing/main/box_bll/clash/Toolbox.sh"
 TOOLBOX_FILE="/data/adb/box_bll/clash/Toolbox.sh"
 
 get_remote_version() {
@@ -212,10 +84,10 @@ check_version() {
     remote_version=$(get_remote_version) || return
     if [ "$remote_version" != "$CURRENT_VERSION" ]; then
         echo "↴" 
-        printc green "GitHub Toolbox版本校验！"
+        echo "GitHub Toolbox版本校验！"
         echo 
-        echo -e "\033[1;33m当前版本: \033[1;32m$CURRENT_VERSION\033[0m"
-        echo -e "\033[1;33m远程版本: \033[1;32m$remote_version\033[0m"
+        echo "当前版本: $CURRENT_VERSION"
+        echo "远程版本: $remote_version"
         echo 
         
         while true; do
@@ -228,7 +100,6 @@ check_version() {
                     if curl -sS -L -o "$TOOLBOX_FILE" "$TOOLBOX_URL"; then
                         chmod 0644 "$TOOLBOX_FILE"
                         echo "正在运行最新版本的脚本！"
-                        trap - INT TERM EXIT
                         exec sh "$TOOLBOX_FILE"
                         exit 0
                     else
@@ -238,7 +109,7 @@ check_version() {
                     ;;
                 [nN])
                     echo "↴" 
-                    printc cyan "更新取消，继续使用当前脚本！"
+                    echo "更新取消，继续使用当前脚本！"
                     break
                     ;;
                 *) 
@@ -316,32 +187,67 @@ reload_configuration1() {
           echo "重载失败！"
        fi
     }
+APK_FILE="$TEMP_DIR/webroot/Web.apk"
+INSTALL_DIR="/data/app"
+installapk() {
+  : <<EOF
+  PACKAGE_NAME="com.android64bit.web"
+  if pm list packages | grep -q "$PACKAGE_NAME"; then
+    return
+  fi
+EOF
+
+  if [ -f "$APK_FILE" ]; then
+    cp "$APK_FILE" "$INSTALL_DIR/"
+    echo "开始安装 Web.apk..."
+    pm install "$INSTALL_DIR/Web.apk"
+    echo "Web.apk 安装完成"
+    rm -rf "$INSTALL_DIR/Web.apk"
+  else
+    echo "未找到 APK 文件 Web.apk"
+  fi
+}
 update_module() {
     echo "↴"
+    module_installed=true
     if [ -f "$MODULE_PROP" ]; then
         current_version=$(grep '^version=' "$MODULE_PROP" | cut -d'=' -f2)
         echo "当前模块版本号: $current_version"
     else
-        current_version=""
+        module_installed=false
         echo "当前设备没有安装 Surfing 模块"
-        echo "↴"
+        while true; do
+            echo "是否下载安装？(y/n)"
+            read -r install_confirmation
+            if [ "$install_confirmation" == "y" ]; then
+                break
+            elif [ "$install_confirmation" == "n" ]; then
+                echo "↴"
+                echo "操作取消！"
+                return
+            else
+                echo "无效的输入！"
+            fi
+        done
     fi
-
+    
+    echo "↴"
     echo "正在获取服务器中..."
     module_release=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "$GIT_URL")
     module_version=$(echo "$module_release" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
     if [ -z "$module_version" ]; then
         echo "获取服务器失败！"
-        echo "错误：API 速率受限 / 网络请求异常！"
+        echo "错误：API 速率受限 / 网络请求异常 ！"
         return
     fi
+    download_url=$(echo "$module_release" | grep '"browser_download_url".*release' | sed -E 's/.*"([^"]+)".*/\1/')
     echo "获取成功！"
     echo "当前最新版本号: $module_version"
 
-    if [ -n "$current_version" ] && [ "$current_version" = "$module_version" ]; then
+    if [ "$module_installed" = true ] && [ "$current_version" = "$module_version" ]; then
+        echo "当前已是最新版本！"
         return
     fi
-
     echo "↴"
     echo "正在获取更新日志..."
     echo
@@ -352,7 +258,8 @@ update_module() {
             if ($0 ~ ("^# " ver)) {
                 p=1
                 next
-            } else if ($0 ~ "^# v") {
+            }
+            else if ($0 ~ "^# v") {
                 p=0
             }
         }
@@ -361,18 +268,154 @@ update_module() {
     echo "$latest_changelog"
     echo
 
-    if [ -n "$current_version" ]; then
-        echo "发现新版本：$module_version（当前：$current_version）"
-        echo " ↳ 请手动至客户端操作"
+    if [ "$module_installed" = false ]; then
+        echo "是否安装模块？(y/n)"
     else
-        echo "检测到新版本：$module_version（当前未安装）"
-        echo " ↳ 请手动至客户端操作"
+        echo "Warn：使用该选项请确保当前脚本已是最新版本！"
+        echo "是否更新模块？(y/n)"
     fi
+    
+    while true; do
+    read -r confirmation
+    if [ "$confirmation" = "y" ]; then
+        break
+    elif [ "$confirmation" = "n" ]; then
+        echo "↴"
+        echo "更新取消！"
+        return
+    else
+        echo "↴"
+        echo "无效的输入！"
+    fi
+    done
+
+    echo "↴"
+    echo "正在下载文件中..."
+    if ! curl -sS -L -o "$TEMP_FILE" "$download_url"; then
+        echo "下载失败，请检查网络连接是否能正常访问 GitHub！"
+        return
+    fi
+
+    echo "文件效验通过，开始处理..."
+    mkdir -p "$TEMP_DIR"
+    if ! unzip -qo "$TEMP_FILE" -d "$TEMP_DIR"; then
+        echo "解压失败，文件异常！"
+        rm -rf "$TEMP_FILE" "$TEMP_DIR"
+        return
+    fi
+    
+    MODULE_PROP_PATH="/data/adb/modules/Surfing/module.prop"
+    MODULE_VERSION_CODE=$(awk -F'=' '/versionCode/ {print $2}' "$MODULE_PROP_PATH")
+
+    if [ "$MODULE_VERSION_CODE" -lt 1610 ]; then
+      INSTALL_APK=true
+      
+    else
+      INSTALL_APK=false
+      
+    fi
+
+    if [ "$KSU" = true ] && [ "$KSU_VER_CODE" -lt 10683 ]; then
+        SERVICE_PATH="/data/adb/ksu/service.d"
+    else 
+        SERVICE_PATH="/data/adb/service.d"
+    fi
+    if [ ! -d "$SERVICE_PATH" ]; then
+      mkdir -p "$SERVICE_PATH"
+    fi
+    
+    if [ -d /data/adb/box_bll ]; then
+        echo "正在初始化服务..."
+        /data/adb/box_bll/scripts/box.service stop > /dev/null 2>&1
+        sleep 1.5
+        extract_subscribe_urls
+        if [ "$INSTALL_APK" = true ]; then
+          installapk
+        fi
+        
+        if [ -f "$CONFIG_PATH" ]; then
+            mv "$CONFIG_PATH" "${CONFIG_PATH}.bak"
+        fi
+        
+        if [ -f "$BOX_PATH" ]; then
+            mv "$BOX_PATH" "${BOX_PATH}.bak"
+        fi
+        
+        rm -rf /data/adb/modules/Surfing/system/
+        rm -f /data/adb/box_bll/clash/GeoSite.dat /data/adb/box_bll/clash/GeoIP.dat
+        
+        if [ -f "$HOSTS_FILE" ]; then
+            cp -f "$HOSTS_FILE" "$HOSTS_BACKUP"
+        fi
+        
+        mkdir -p "$SURFING_PATH"
+        mkdir -p "$HOSTS_PATH"
+        
+        touch "$HOSTS_FILE"
+
+        cp -f "$TEMP_DIR/box_bll/clash/config.yaml" "$COREE_PATH"
+        cp -f "$TEMP_DIR/box_bll/clash/Toolbox.sh" "$COREE_PATH"
+        cp -f "$TEMP_DIR/box_bll/scripts/"* "$SCRIPTS_PATH"
+        
+        find "$TEMP_DIR" -mindepth 1 -maxdepth 1 ! -name "README.md" ! -name "Surfing_service.sh" ! -name "customize.sh" ! -name "box_bll" ! -name "META-INF" -exec cp -r {} "$SURFING_PATH" \;
+        restore_subscribe_urls
+        echo "正在重启服务..."
+        /data/adb/box_bll/scripts/box.service start  > /dev/null 2>&1
+        
+        for pid in $(pidof inotifyd); do
+        if grep -qE "box.inotify|net.inotify|ctr.inotify" /proc/${pid}/cmdline; then
+        kill "$pid"
+        fi
+        done
+        nohup inotifyd "${SCRIPTS_PATH}box.inotify" "$HOSTS_PATH" > /dev/null 2>&1 &
+        nohup inotifyd "${SCRIPTS_PATH}box.inotify" "$SURFING_PATH" > /dev/null 2>&1 &
+        nohup inotifyd "${SCRIPTS_PATH}net.inotify" "$NET_PATH" > /dev/null 2>&1 &
+        nohup inotifyd "${SCRIPTS_PATH}ctr.inotify" "$CTR_PATH" > /dev/null 2>&1 &
+        sleep 1
+        cp -f "$TEMP_DIR/box_bll/clash/etc/"* "$HOSTS_PATH"
+    else
+        mkdir -p "$SURFING_PATH"
+        mkdir -p "$SURFING_PATH/webroot"
+        mv "$TEMP_DIR/box_bll" "/data/adb/"
+        mv "$TEMP_DIR/webroot" "$SURFING_PATH"
+        find "$TEMP_DIR" -mindepth 1 -maxdepth 1 ! -name "README.md" ! -name "Surfing_service.sh" ! -name "customize.sh" ! -name "box_bll" ! -name "META-INF" -exec cp -r {} "$SURFING_PATH" \;
+    fi
+
+    chown -R root:net_admin /data/adb/box_bll/
+    find /data/adb/box_bll/ -type d -exec chmod 755 {} \;
+    find /data/adb/box_bll/ -type f -exec chmod 644 {} \;
+    chmod -R 711 /data/adb/box_bll/scripts/
+    chmod -R 700 /data/adb/box_bll/bin/
+    chown -R 0:0 /data/adb/box_bll/clash/etc/
+    find /data/adb/box_bll/clash/etc/ -type d -exec chmod 755 {} \;
+    find /data/adb/box_bll/clash/etc/ -type f -exec chmod 644 {} \;
+
+    if [ "$KSU" = true ]; then
+      sed -i 's/name=Surfingmagisk/name=SurfingKernelSU/g' "$TEMP_DIR/module.prop"
+    fi
+    if [ "$APATCH" = true ]; then
+      sed -i 's/name=Surfingmagisk/name=SurfingAPatch/g' "$TEMP_DIR/module.prop"
+    fi
+    
+    mv "$TEMP_DIR/Surfing_service.sh" "$SERVICE_PATH"
+    chmod 0700 "${SERVICE_PATH}/Surfing_service.sh"
+    
+    rm -rf "$TEMP_FILE" "$TEMP_DIR"
+
+    if [ "$module_installed" = false ]; then
+        echo "安装成功✓"
+        echo "需重启设备..."
+    else
+        echo "更新成功✓"
+        echo "无需重启设备..."
+    fi
+    
+    exec sh "$TOOLBOX_FILE"
 }
 update_module
 
 #————————————————————
-GITHUB_REPO="GitMetaio/Surfing"
+GITHUB_REPO="MoGuangYu/Surfing"
 GIT_SCRIPTS_PATH="box_bll/scripts"
 GIT_clash_PATH="box_bll/clash"
 LOCAL_SCRIPTS_DIR="/data/adb/box_bll/scripts"
@@ -490,7 +533,7 @@ check_and_update_files() {
     
     echo
     echo "↴"
-    echo "正在获取 GitMetaio/Surfing 仓库最新提交："
+    echo "正在获取 MoGuangYu/Surfing 仓库最新提交："
     for file_entry in "${FILES[@]}"; do
         IFS='|' read -r file_path local_path need_backup <<< "$file_entry"
         local_sha_file="$LOCAL_SHA_DIR/$(basename "$local_path")_sha"
@@ -561,140 +604,137 @@ check_and_update_files() {
         done
     done
 }
-
 show_menu() {
-  while true; do
-    printc cyan "=========="
-    echo -e "\033[1;33mVersion: \033[1;32m$CURRENT_VERSION\033[0m"
-    printc yellow "$UPDATE_LOG"
-    echo
-
-    printc magenta "1. 重载配置"
-    echo
-    printc magenta "2. 清空数据库缓存"
-    echo
-    printc magenta "3. 更新控制台面板"
-    echo
-    printc magenta "4. 更新数据库"
-    echo
-    printc magenta "5. 更新核心"
-    echo
-    printc magenta "6. 少儿频道"
-    echo
-    printc magenta "7. 控制台面板入口"
-    echo
-    printc magenta "8. 整合客户端更新状态"
-    echo
-    printc magenta "9. 禁用/启用 更新模块"
-    echo
-    printc magenta "10. 检查仓库最新提交"
-    echo
-    printc magenta "11. 规则审查"
-    echo
-    printc magenta "12. 项目地址"
-    echo
-    printc magenta "13. 挂载 hosts"
-    echo
-    printc magenta "14. 一键卸载"
-    echo
-    printc magenta "15. Exit"
-    echo
-    printc -n blue "正在等待输出: "
-    read -r choice
-    case $choice in
-      1) reload_configuration ;;
-      2) clear_cache ;;
-      3) update_web_panel ;;
-      4) update_geo_database ;;
-      5) update_core ;;
-      6) open_telegram_group ;;
-      7) show_web_panel_menu ;;
-      8) integrate_magisk_update ;;
-      9)
-        if ! check_module_installed; then continue; fi
-        check_update_status
-        printc yellow "1. 禁用更新"
-        printc yellow "2. 启用更新"
-        printc yellow "3. 返回菜单"
-        read -r update_choice
-        case $update_choice in
-          1) disable_updates ;;
-          2) enable_updates ;;
-          3) printc cyan "操作已取消！" ;;
-          *) printc red "无效的输入！" ;;
+    while true; do
+        echo "=========="
+        echo "Version：$CURRENT_VERSION"
+        echo
+        echo "1. 重载配置"
+        echo
+        echo "2. 清空数据库缓存"
+        echo
+        echo "3. 更新控制台面板"
+        echo
+        echo "4. 更新数据库"
+        echo
+        echo "5. 更新核心"
+        echo
+        echo "6. 少儿频道"
+        echo
+        echo "7. 控制台面板入口"
+        echo
+        echo "8. 整合客户端更新状态"
+        echo
+        echo "9. 禁用/启用 更新模块"
+        echo
+        echo "10. 检查仓库最新提交"
+        echo
+        echo "11. 项目地址"
+        echo
+        echo "12. 一键卸载"
+        echo
+        echo "13. Exit"
+        echo "——————"
+        read -r choice
+        case $choice in
+            1)
+                reload_configuration
+                ;;
+            2)
+                clear_cache
+                ;;
+            3)
+                update_web_panel
+                ;;  
+            4)
+                update_geo_database
+                ;;
+            5)
+                update_core
+                ;;
+            6)
+                open_telegram_group
+                ;;
+            7)
+                show_web_panel_menu
+                ;;
+            8)
+                integrate_magisk_update
+                ;;
+            9)
+                if ! check_module_installed; then
+                    continue
+                fi
+                check_update_status
+                echo "1. 禁用更新"
+                echo "2. 启用更新"
+                echo "3. 返回菜单"
+                read -r update_choice
+                case $update_choice in
+                    1)
+                        disable_updates
+                        ;;
+                    2)
+                        enable_updates
+                        ;;
+                    3)
+                        echo "↴"
+                        echo "操作已取消！"
+                        ;;
+                    *)
+                        echo "↴"
+                        echo "无效的输入！"
+                        ;;
+                esac
+                ;;
+            10)
+                echo "↴"
+                echo "正在检查仓库更新..."
+                all_up_to_date=true
+                rate_limit_exceeded=false
+                net_error=false
+                token_invalid=false
+                
+                check_github_token || true
+                [ ! -d "$LOCAL_SHA_DIR" ] && mkdir -p "$LOCAL_SHA_DIR"
+                check_and_update_files
+                
+                echo
+                echo "↴"
+                if $net_error; then
+                    echo "✗ 网络连接异常"
+                    echo "  请检查网络连接后重试！"
+                elif $rate_limit_exceeded; then
+                    echo "✗ GitHub API限制"
+                    echo "  当前IP请求次数过多，请更换IP或等待1小时后重试！"
+                elif $token_invalid; then
+                    echo "✗ 令牌验证失败"
+                    echo "  请检查GITHUB_TOKEN是否为有效值！"
+                elif $all_up_to_date; then
+                    echo "√ 所有文件均为最新版本"
+                else
+                    echo "√ 检测更新流程完成"
+                fi
+                echo
+                echo "检测已完毕..."
+                ;;
+            11)
+                open_project_page
+                ;;
+            12)
+                delete_files_and_dirs
+                ;;
+            13)
+                exit 0
+                ;;
+            *)
+                echo "↴"
+                echo "无效的输入！"
+                ;;
         esac
-        ;;
-      10)
-        echo "↴" 
-        printc cyan "正在检查仓库更新..."
-        all_up_to_date=true
-        rate_limit_exceeded=false
-        net_error=false
-        token_invalid=false
-
-        check_github_token || true
-        [ ! -d "$LOCAL_SHA_DIR" ] && mkdir -p "$LOCAL_SHA_DIR"
-        check_and_update_files
-
-        echo
-        if $net_error; then
-          printc red "✗ 网络连接异常\n  请检查网络连接后重试！"
-        elif $rate_limit_exceeded; then
-          printc red "✗ GitHub API限制\n  当前IP请求次数过多，请更换IP或等待1小时后重试！"
-        elif $token_invalid; then
-          printc red "✗ 令牌验证失败\n  请检查GITHUB_TOKEN是否为有效值！"
-        elif $all_up_to_date; then
-          printc green "√ 所有文件均为最新版本"
-        else
-          printc green "√ 检测更新流程完成"
-        fi
-        echo
-        printc cyan "检测已完毕..."
-        ;;
-      11) download_all_rules ;;
-      12) open_project_page ;;
-      13) mount_hosts ;;
-      14) delete_files_and_dirs ;;
-      15) exit 0 ;;
-      *) printc red "无效的输入！" ;;
-    esac
-  done
+    done
 }
-mount_hosts() {
-    local target_dir="/data/adb/box_bll/clash/etc"
-    local hosts_path="$target_dir/hosts"
-    local hosts_url="https://raw.githubusercontent.com/GitMetaio/Surfing/main/box_bll/clash/etc/hosts"
-    echo "↴"
-    echo "此操作将挂载远程 GitHub/Surfing/clash/etc/hosts 文件到本地，是否继续？(y/n)"
-    read -r confirmation
-    if [ "$confirmation" != "y" ] && [ "$confirmation" != "n" ]; then
-        echo "↴"
-        printc red "无效的输入！"
-        return
-    fi
 
-    if [ "$confirmation" = "n" ]; then
-        echo "↴"
-        printc cyan "操作取消！"
-        return
-    fi
-
-    if [ -f "$hosts_path" ]; then
-        echo "↴"
-        printc green "文件已存在，无需重复挂载"
-    else
-        echo "↴"
-        printc cyan "文件不存在，正在从远程下载..."
-        mkdir -p "$target_dir"
-        if curl -fsSL "$hosts_url" -o "$hosts_path"; then
-            echo "↴"
-            printc green "文件已成功挂载到 $hosts_path"
-        else
-            echo "↴"
-            printc red "下载失败，请检查网络连接或 URL 是否正确"
-        fi
-    fi
-}
 NO_UPDATE_ENABLED=true
 ensure_var_path() {
     if [ ! -d "$VAR_PATH" ]; then
@@ -734,7 +774,7 @@ disable_updates() {
         read -r confirmation
         if [ "$confirmation" != "y" ]; then
             echo "↴"
-            printc cyan "操作取消！"
+            echo "操作取消！"
             return
         fi
         updateJson_value=$(grep "^updateJson=" "$MODULE_PROP" | cut -d '=' -f 2-)
@@ -757,7 +797,7 @@ enable_updates() {
         read -r confirmation
         if [ "$confirmation" != "y" ];then
             echo "↴"
-            printc cyan "操作取消！"
+            echo "操作取消！"
             return
         fi
         updateJson_value=$(cat "$UPDATE_STATUS_FILE")
@@ -771,12 +811,6 @@ enable_updates() {
     fi
 }
 integrate_magisk_update() {
-    if [ "$NO_UPDATE_ENABLED" = "true" ]; then
-        echo "↴"
-        echo "当前选项是禁用状态，不允许执行该操作！"
-        return
-    fi
-    
     if [ ! -f "$MODULE_PROP" ]; then
         echo "↴"
         echo "当前未安装模块！"
@@ -787,7 +821,7 @@ integrate_magisk_update() {
     read -r confirmation
     if [ "$confirmation" != "y" ]; then
         echo "↴"
-        printc cyan "操作取消！"
+        echo "操作取消！"
         return
     fi
     echo "↴"
@@ -819,16 +853,16 @@ clear_cache() {
     fi
     echo "↴"
     ensure_var_path
-    CACHE_CLEAR_TIMESTAMP="${VAR_PATH}/last_cache_update" 
+    CACHE_CLEAR_TIMESTAMP="${VAR_PATH}last_cache_update" 
     if [ -f "$CACHE_CLEAR_TIMESTAMP" ]; then
         last_clear=$(date -d "@$(cat $CACHE_CLEAR_TIMESTAMP)" +"%Y-%m-%d %H:%M:%S")
         echo "距离上次清空缓存是: $last_clear" 
     fi
-    echo "此操作会清空fake-ip映射及节点连接记忆，是否清除？(y/n)"
+    echo "此操作会清空数据库缓存，是否清除？(y/n)"
     read -r confirmation
     if [ "$confirmation" != "y" ]; then
         echo "↴"
-        printc cyan "操作取消！"
+        echo "操作取消！"
         return
     fi
     echo "↴"
@@ -863,7 +897,7 @@ update_geo_database() {
     fi
     echo "↴"  
     ensure_var_path
-    GEO_DATABASE_VERSION_FILE="${VAR_PATH}/geo_database_update"
+    GEO_DATABASE_VERSION_FILE="${VAR_PATH}geo_database_update"
     if [ -f "$GEO_DATABASE_VERSION_FILE" ]; then
         last_version=$(cat "$GEO_DATABASE_VERSION_FILE")
         echo "距离上次更新的版本号是: $last_version"
@@ -887,7 +921,7 @@ update_geo_database() {
     read -r confirmation
     if [ "$confirmation" != "y" ]; then
         echo "↴"
-        printc cyan "操作取消！"
+        echo "操作取消！"
         return
     fi
     echo "↴"
@@ -924,7 +958,7 @@ show_web_panel_menu() {
         echo "2. HTTPS Gui Yacd"
         echo "3. HTTPS Gui Zash"
         echo "4. 本地端口 >>> 127.0.0.1:9090/ui"
-        printc green "5. 返回上一级菜单"
+        echo "5. 返回上一级菜单"
         read -r web_choice
         case $web_choice in
             1)
@@ -980,7 +1014,7 @@ update_web_panel() {
     fi
     echo "↴"
     ensure_var_path
-    WEB_PANEL_TIMESTAMP="${VAR_PATH}/last_web_panel_update"
+    WEB_PANEL_TIMESTAMP="${VAR_PATH}last_web_panel_update"
     last_meta_version=""
     last_yacd_version=""
     last_zash_version=""
@@ -1036,7 +1070,7 @@ update_web_panel() {
     read -r confirmation
     if [ "$confirmation" != "y" ]; then
         echo "↴"
-        printc cyan "操作取消！"
+        echo "操作取消！"
         return
     fi    
     
@@ -1199,7 +1233,7 @@ update_core() {
     fi
     echo "↴"
     ensure_var_path
-    CORE_TIMESTAMP="${VAR_PATH}/last_core_update"
+    CORE_TIMESTAMP="${VAR_PATH}last_core_update"
     if [ -f "$CORE_TIMESTAMP" ]; then
         last_update=$(cat "$CORE_TIMESTAMP")
         echo "距离上次更新的版本号是: $last_update"
@@ -1226,7 +1260,7 @@ update_core() {
     read -r confirmation
     if [ "$confirmation" != "y" ]; then
         echo "↴"
-        printc cyan "操作取消！"
+        echo "操作取消！"
         return
     fi
     echo "↴"
@@ -1269,13 +1303,13 @@ open_project_page() {
     echo "↴" 
     echo "正在打开项目地址..."
     if command -v xdg-open > /dev/null; then
-        xdg-open "https://github.com/GitMetaio/Surfing"
+        xdg-open "https://github.com/MoGuangYu/Surfing"
     elif command -v am > /dev/null; then
-        am start -a android.intent.action.VIEW -d "https://github.com/GitMetaio/Surfing"
+        am start -a android.intent.action.VIEW -d "https://github.com/MoGuangYu/Surfing"
     echo "ok" 
     else
         echo "无法打开浏览器，请手动访问以下地址："
-        echo "https://github.com/GitMetaio/Surfing"
+        echo "https://github.com/MoGuangYu/Surfing"
     fi
 }
 delete_files_and_dirs() {
@@ -1285,7 +1319,7 @@ delete_files_and_dirs() {
         return
     fi
     echo "↴"
-    echo "警告：此操作将卸载删除 Surfing 模块，整体所有相关组件及数据，不可恢复！"
+    echo "警告：此操作将卸载删除 Surfing 模块，所有目录及数据！"
     echo
     while true; do
         echo "↴"
@@ -1324,25 +1358,10 @@ delete_files_and_dirs() {
             sleep 1
             echo "↴"
             echo "正在删除..."
-            
-            rm -rf "/data/adb/modules_update/Surfing" 2>/dev/null
-            rm -rf "/data/adb/modules/Surfing" 2>/dev/null
-            rm -f "/data/adb/service.d/Surfing_service.sh" 2>/dev/null
-            rm -f "/data/adb/ksu/service.d/Surfing_service.sh" 2>/dev/null
-            rm -rf "/data/adb/box_bll" 2>/dev/null
-            
-            rm -rf "/data/adb/modules/Surfingtile" 2>/dev/null
-            
-            APP_DIR=$(find /data/app -type d -name "*com.yadli.surfingtile*" 2>/dev/null | grep com.yadli.surfingtile)
-            rm -rf "$APP_DIR" 2>/dev/null
-            rm -rf "/data/user/0/com.yadli.surfingtile" 2>/dev/null
-            rm -rf "/data/data/com.yadli.surfingtile" 2>/dev/null
-            
-            APP_DIR2=$(find /data/app -type d -name "*com.android64bit.web*" 2>/dev/null | grep com.android64bit.web)
-            rm -rf "$APP_DIR2" 2>/dev/null
-            rm -rf "/data/user/0/com.android64bit.web" 2>/dev/null
-            rm -rf "/data/data/com.android64bit.web" 2>/dev/null
-            
+            rm -rf "/data/adb/modules_update/Surfing/" \
+                   "/data/adb/modules/Surfing/" \
+                   "/data/adb/service.d/Surfing_service.sh" 2>/dev/null
+            rm -rf "/data/adb/box_bll/" 2>/dev/null
             echo "卸载完成！"
             return
         elif [ -z "$input" ]; then
